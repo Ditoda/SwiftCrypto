@@ -22,6 +22,8 @@ struct HomeView: View {
             VStack{
                 homeHeadar
                 
+                HomeStatsView(showPortfolio: $showPortfolio)
+                
                 SearchBarView(searchText: $vm.searchText)
                 
                 columnTitles
@@ -79,7 +81,7 @@ extension HomeView {
         List{
             ForEach(vm.allCoins) {coin in
                 CoinRowView(coin: coin, showHoldingColumn: false )
-                    .listRowInsets(.init(top: 10,leading: 0, bottom: 10, trailing: 0))
+                    .listRowInsets(.init(top: 10,leading: 0, bottom: 10, trailing: 10))
             }
         }
         .listStyle(PlainListStyle())
