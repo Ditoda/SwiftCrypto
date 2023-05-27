@@ -49,7 +49,7 @@ extension Double{
             formatter.numberStyle = .currency
 //        formatter.locale = .current // <- default value
 //        formatter.currencyCode = "usd" // <- change currency
-//        formatter.currencySymbol = "$" // <- change currncy symbol
+            formatter.currencySymbol = "₽" // <- change currncy symbol
             formatter.minimumFractionDigits = 2
             formatter.maximumFractionDigits = 6
             return formatter
