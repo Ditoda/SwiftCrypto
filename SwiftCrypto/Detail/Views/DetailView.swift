@@ -24,6 +24,7 @@ struct DetailLoadingView: View{
 struct DetailView: View {
     
     @StateObject var vm: DetailViewModel
+    @State private var showFullDescription: Bool = false 
     private let columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible()),
@@ -37,19 +38,34 @@ struct DetailView: View {
     
     var body: some View {
         ScrollView{
-            VStack(spacing: 20){
-                Text("")
-                    .frame(height: 150)
-                overviewTitle
-                Divider()
-                overviewGrid
-                additionalTitle
-                Divider()
-                additionalGrid
+            VStack{
+                ChartView(coin: vm.coin)
+                    .padding(.vertical)
+                
+                VStack(spacing: 20){
+                    overviewTitle
+                    Divider()
+                    descriptionSection
+                    overviewGrid
+                    additionalTitle
+                    Divider()
+                    additionalGrid
+                    websiteSection
+                    
+                    .accentColor(.blue )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.headline)
+                
+                }
+                .padding()
             }
-            .padding()
         }
         .navigationTitle(vm.coin.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing){
+                navigationBarTrailing
+            }
+        }
     }
         
 }
@@ -59,10 +75,21 @@ struct DetailView_Previews: PreviewProvider {
         NavigationView{
         DetailView(coin: dev.coin)
         }
+        .preferredColorScheme(.light)
     }
 }
 
 extension DetailView{
+    
+    private var navigationBarTrailing: some View{
+        HStack {
+            Text(vm.coin.symbol.uppercased())
+                .font(.headline)
+             .foregroundColor(Color.theme.secondaryText)
+            CoinImageView(coin: vm.coin)
+                .frame(width: 25, height: 25)
+        }
+    }
     
     private var overviewTitle: some View{
         Text("Overview")
@@ -78,6 +105,32 @@ extension DetailView{
             .bold()
             .foregroundColor(Color.theme.accent)
             .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private var descriptionSection: some View{
+        ZStack{
+            if let coinDescription = vm.coinDescription, !coinDescription.isEmpty{
+                VStack(alignment: .leading){
+                    Text(coinDescription)
+                        .lineLimit(showFullDescription ? nil : 3)
+                        .font(.callout)
+                        .foregroundColor(Color.theme.secondaryText)
+                    Button {
+                        withAnimation(.easeInOut){
+                            showFullDescription.toggle()
+                        }
+                    } label: {
+                        Text(showFullDescription ? "Less" : "Read more...")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .padding(.vertical)
+                        
+                    }
+                    .accentColor(.blue)
+                }.frame(maxWidth: .infinity, alignment: .leading)
+                
+            }
+        }
     }
     
     private var overviewGrid: some View{
@@ -104,5 +157,17 @@ extension DetailView{
         }
     }
     
+    private var websiteSection: some View{
+        VStack(alignment: .leading, spacing: 20){
+            if let websiteString = vm.websiteURL,
+               let url = URL(string: websiteString) {
+                Link("Website", destination: url)
+            }
+            if let redditString = vm.redditURL,
+               let url = URL(string: redditString) {
+                Link("Reddit", destination: url)
+            }
+        }
+    }
     
 }
